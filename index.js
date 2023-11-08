@@ -62,8 +62,8 @@ app.post("/books", (req, res) => {
    if (!bookExists)
    {  
       books.push(newBook); 
-      booksMap.set(newBook.id, newBook.title);
-      //res.setHeader('Content-Type', 'text/plain');
+      //booksMap.set(newBook.id, newBook.title);
+      booksMap.set(newBook.id, { id: newBook.id, title: newBook.title });
       res.status(201); 
       console.log("201 OK");
    }
