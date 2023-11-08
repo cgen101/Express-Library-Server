@@ -1,5 +1,6 @@
 var express = require('express');
 var app = express();
+app.use(express.json());
 
 
 var books = [
@@ -55,6 +56,24 @@ function showIDandTitle(availQuery) {
    }); 
 }
 
+app.post("/books", (req, res) => { 
+   const newBook = req.body;
+   const bookExists = books.find((book) => book.id === newBook.id); 
+   if (!bookExists)
+   {  
+      books.push(newBook); 
+      booksMap.set(newBook.id, newBook.title);
+      //res.setHeader('Content-Type', 'text/plain');
+      res.status(201); 
+      console.log("201 OK");
+   }
+   else 
+   {
+      res.status(403); 
+      console.log("ERROR 403: book already exists.")
+   }
+}); 
+
 app.get("/books/:id", (req, res) => { 
    const bookId = req.params.id; 
    const book = books.find((book) => book.id === bookId); 
@@ -71,6 +90,7 @@ app.get("/books/:id", (req, res) => {
       console.log("ERROR 404: book not found")
    }
 });
+
 
 
 app.use(function(req, res, next) {   
