@@ -22,13 +22,21 @@ app.get("/books", (req, res) => {
 
    if (avail === "true")
    { 
-      const availBooks = books.filter((book) => book.avail === "true"); 
-      res.json(availBooks); 
+      const availBooks = books.filter((book) => book.avail === "true");
+      const filteredAvailBooksData = availBooks.map(book => {
+         const { id, title } = booksMap.get(book.id);
+         return { id, title };
+      }); 
+      res.json(filteredAvailBooksData); 
    } 
    else if (avail === "false")
    {
       const unavailBooks = books.filter((book) => book.avail === "false"); 
-      res.json(unavailBooks); 
+      const filteredUnavailBooksData = unavailBooks.map(book => {
+         const { id, title } = booksMap.get(book.id);
+         return { id, title };
+      });  
+      res.json(filteredUnavailBooksData); 
    }
    else
    {
@@ -46,7 +54,7 @@ app.get("/books/:id", (req, res) => {
    {
       res.json(book);
       res.status(200); 
-      console.log("200 BOO")
+      console.log("200 OK")
    }
    else 
    {
