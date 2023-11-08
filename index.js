@@ -18,33 +18,42 @@ books.forEach(book => {
 
 app.get("/books", (req, res) => {
    const { avail } = req.query;
-   const booksInfo = Array.from(booksMap.values());
 
    if (avail === "true")
    { 
       const availBooks = books.filter((book) => book.avail === "true");
-      const filteredAvailBooksData = availBooks.map(book => {
-         const { id, title } = booksMap.get(book.id);
-         return { id, title };
-      }); 
+      const filteredAvailBooksData = showIDandTitle(availBooks); 
       res.json(filteredAvailBooksData); 
    } 
    else if (avail === "false")
    {
       const unavailBooks = books.filter((book) => book.avail === "false"); 
-      const filteredUnavailBooksData = unavailBooks.map(book => {
-         const { id, title } = booksMap.get(book.id);
-         return { id, title };
-      });  
+      const filteredUnavailBooksData = showIDandTitle(unavailBooks);  
       res.json(filteredUnavailBooksData); 
    }
    else
    {
-    res.json(booksInfo);
-    res.status(200); 
-    console.log("200 OK")
+      booksInfo = showIDandTitle(books); 
+      if (booksInfo)
+      {
+         res.json(booksInfo);
+         res.status(200); 
+         console.log("200 OK")
+      }
+      else 
+      { 
+         res.status(404); 
+         console.log("ERROR 404: no books found.")
+      }
    }
 });
+
+function showIDandTitle(availQuery) { 
+   return availQuery.map(book => {
+      const { id, title } = booksMap.get(book.id);
+      return { id, title };
+   }); 
+}
 
 app.get("/books/:id", (req, res) => { 
    const bookId = req.params.id; 
