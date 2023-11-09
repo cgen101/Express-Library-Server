@@ -82,7 +82,7 @@ app.get("/books/:id", (req, res) => {
    {
       res.json(book);
       res.status(200); 
-      console.log("200 OK")
+      console.log("200 OK")   
    }
    else 
    {
@@ -91,6 +91,23 @@ app.get("/books/:id", (req, res) => {
    }
 });
 
+app.put("/books/:id", (req,res) => { 
+   const bookId = req.params.id; 
+   const bookIndex = books.findIndex((book) => book.id === bookId); 
+   if (bookIndex != -1) 
+   { 
+      const updateBook = req.body; 
+      books[bookIndex] = updateBook; 
+      res.status(200); 
+      console.log("200 OK");
+   }
+   else 
+   { 
+      res.status(404); 
+      console.log("ERROR 404: book not found.")
+   }
+
+}); 
 
 
 app.use(function(req, res, next) {   
