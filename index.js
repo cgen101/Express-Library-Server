@@ -109,6 +109,22 @@ app.put("/books/:id", (req,res) => {
 
 }); 
 
+app.delete("/books/:id", (req,res) => { 
+   const bookId = req.params.id; 
+   const bookIndex = books.findIndex((book) => book.id === bookId); 
+   if (bookIndex != -1) 
+   {
+      books.splice(bookIndex, 1); 
+      res.status(200); 
+      console.log("200 OK"); 
+   }
+   else 
+   { 
+      res.status(204); 
+      console.log("ERROR 204: nothing to delete.")
+   }
+})
+
 
 app.use(function(req, res, next) {   
    res.header('Access-Control-Allow-Origin', '*');   
