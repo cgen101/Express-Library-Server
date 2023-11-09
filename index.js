@@ -1,15 +1,24 @@
 var express = require('express');
 var app = express();
 app.use(express.json());
+app.use(function(req, res, next) {   
+   res.header('Access-Control-Allow-Origin', '*');   
+   res.header('Access-Control-Allow-Methods', 
+   'GET,PUT,POST,PATCH,DELETE,OPTIONS');   
+   res.header('Access-Control-Allow-Headers',         
+   'Content-Type, Authorization, Content-Length, X-Requested-With');   
+   if (req.method === "OPTIONS") res.sendStatus(200);   
+   else next(); 
+});
 
 
-var books = [
-    {id: "1", title: "Reactions in REACT", author: "Ben Dover", publisher: "Random House", isbn: "978-3-16-148410-0", avail: "true"},
-    {id: "2", title: "Express-sions", author: "Freida Livery", publisher: "Chaotic House", isbn: "978-3-16-148410-2", avail: "true"},
-    {id: "3", title: "Restful REST", author: "Al Gorithm", publisher: "ACM", isbn: "978-3-16-143310-1", avail: "true"},
-    {id: "4", title: "See Essess", author: "Anna Log", publisher: "O'Reilly", isbn: "987-6-54-148220-1", avail: "false", who: "Homer", due: "1/1/23"},
-    {id: "5", title: "Scripting in JS", author: "Dee Gital", publisher: "IEEE", isbn: "987-6-54-321123-1", avail: "false", who: "Marge", due: "1/2/23"},
-    {id: "6", title: "Be An HTML Hero", author: "Jen Neric", publisher: "Coders-R-Us", isbn: "987-6-54-321123-2", avail: "false", who: "Lisa", due: "1/3/23"}
+let books = [
+    {id: "1", title: "Reactions in REACT", author: "Ben Dover", publisher: "Random House", isbn: "978-3-16-148410-0", avail: true},
+    {id: "2", title: "Express-sions", author: "Freida Livery", publisher: "Chaotic House", isbn: "978-3-16-148410-2", avail: true},
+    {id: "3", title: "Restful REST", author: "Al Gorithm", publisher: "ACM", isbn: "978-3-16-143310-1", avail: true},
+    {id: "4", title: "See Essess", author: "Anna Log", publisher: "O'Reilly", isbn: "987-6-54-148220-1", avail: false, who: "Homer", due: "1/1/23"},
+    {id: "5", title: "Scripting in JS", author: "Dee Gital", publisher: "IEEE", isbn: "987-6-54-321123-1", avail: false, who: "Marge", due: "1/2/23"},
+    {id: "6", title: "Be An HTML Hero", author: "Jen Neric", publisher: "Coders-R-Us", isbn: "987-6-54-321123-2", avail: false, who: "Lisa", due: "1/3/23"}
  ];
 
 const booksMap = new Map();
@@ -18,36 +27,44 @@ books.forEach(book => {
 });
 
 app.get("/books", (req, res) => {
-   const { avail } = req.query;
+   const avail = req.query.avail === "true";
 
-   if (avail === "true")
-   { 
-      const availBooks = books.filter((book) => book.avail === "true");
-      const filteredAvailBooksData = showIDandTitle(availBooks); 
-      res.json(filteredAvailBooksData); 
-   } 
-   else if (avail === "false")
+   if (req.query.avail!==undefined)
    {
-      const unavailBooks = books.filter((book) => book.avail === "false"); 
-      const filteredUnavailBooksData = showIDandTitle(unavailBooks);  
-      res.json(filteredUnavailBooksData); 
+      if (avail)
+      { 
+         const availBooks = books.filter((book) => book.avail === true);
+         const filteredAvailBooksData = showIDandTitle(availBooks); 
+         res.status(200).json(filteredAvailBooksData); ; 
+         return;
+      } 
+      else if (!avail)
+      {
+         const unavailBooks = books.filter((book) => book.avail === false); 
+         const filteredUnavailBooksData = showIDandTitle(unavailBooks);  
+         res.status(200).json(filteredUnavailBooksData); 
+         return;
+      }
    }
    else
    {
       booksInfo = showIDandTitle(books); 
-      if (booksInfo)
+      if (booksInfo.length > 0)
       {
-         res.json(booksInfo);
-         res.status(200); 
-         console.log("200 OK")
+         res.status(200).json(booksInfo); 
+         console.log("200 OK");
+         return;
       }
       else 
       { 
-         res.status(404); 
-         console.log("ERROR 404: no books found.")
+         res.status(404).json({error:"not found"}); 
+         console.log("ERROR 404: no books found.");
+         return;
       }
    }
-});
+}); 
+
+
 
 function showIDandTitle(availQuery) { 
    return availQuery.map(book => {
@@ -62,15 +79,16 @@ app.post("/books", (req, res) => {
    if (!bookExists)
    {  
       books.push(newBook); 
-      //booksMap.set(newBook.id, newBook.title);
       booksMap.set(newBook.id, { id: newBook.id, title: newBook.title });
-      res.status(201); 
       console.log("201 OK");
+      res.status(201).send("201"); 
+      return;
    }
    else 
-   {
-      res.status(403); 
-      console.log("ERROR 403: book already exists.")
+   { 
+      console.log("ERROR 403: book already exists.");
+      res.status(403).json({error:"book already exists"});
+      return;
    }
 }); 
 
@@ -80,14 +98,15 @@ app.get("/books/:id", (req, res) => {
 
    if (book)
    {
-      res.json(book);
-      res.status(200); 
-      console.log("200 OK")   
+      res.status(200).json(book); 
+      console.log("200 OK"); 
+      return;
    }
    else 
    {
-      res.status(404); 
-      console.log("ERROR 404: book not found")
+      res.status(404).json({error:"not found"}); 
+      console.log("ERROR 404: book not found");
+      return;
    }
 });
 
@@ -97,14 +116,23 @@ app.put("/books/:id", (req,res) => {
    if (bookIndex != -1) 
    { 
       const updateBook = req.body; 
-      books[bookIndex] = updateBook; 
-      res.status(200); 
+      const existingBook = books[bookIndex]; 
+      const updateBookKeys = Object.keys(updateBook);
+
+      updateBookKeys.forEach((prop) => {
+         existingBook[prop] = updateBook[prop];
+      });
+
+      console.log(books[bookIndex]);
+      res.status(200).send("200"); 
       console.log("200 OK");
+      return;
    }
    else 
    { 
-      res.status(404); 
-      console.log("ERROR 404: book not found.")
+      res.status(404).json({error:"not found"}); 
+      console.log("ERROR 404: book not found.");
+      return;
    }
 
 }); 
@@ -115,26 +143,18 @@ app.delete("/books/:id", (req,res) => {
    if (bookIndex != -1) 
    {
       books.splice(bookIndex, 1); 
-      res.status(200); 
+      res.status(200).send("200"); 
       console.log("200 OK"); 
+      return;
    }
    else 
    { 
-      res.status(204); 
-      console.log("ERROR 204: nothing to delete.")
+      res.status(204).json({error:"not found"}); 
+      console.log("ERROR 204: nothing to delete.");
+      return;
    }
-})
-
-
-app.use(function(req, res, next) {   
-   res.header('Access-Control-Allow-Origin', '*');   
-   res.header('Access-Control-Allow-Methods', 
-   'GET,PUT,POST,PATCH,DELETE,OPTIONS');   
-   res.header('Access-Control-Allow-Headers',         
-   'Content-Type, Authorization, Content-Length, X-Requested-With');   
-   if (req.method === "OPTIONS") res.sendStatus(200);   
-   else next(); 
 });
+
 
 app.listen(3000, () => {
    console.log("Server running at http://localhost:3000");
