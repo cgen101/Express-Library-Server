@@ -1,5 +1,6 @@
 var express = require('express');
 var app = express();
+
 app.use(express.json());
 app.use(function(req, res, next) {   
    res.header('Access-Control-Allow-Origin', '*');   
@@ -19,8 +20,9 @@ let books = [
     {id: "4", title: "See Essess", author: "Anna Log", publisher: "O'Reilly", isbn: "987-6-54-148220-1", avail: false, who: "Homer", due: "1/1/23"},
     {id: "5", title: "Scripting in JS", author: "Dee Gital", publisher: "IEEE", isbn: "987-6-54-321123-1", avail: false, who: "Marge", due: "1/2/23"},
     {id: "6", title: "Be An HTML Hero", author: "Jen Neric", publisher: "Coders-R-Us", isbn: "987-6-54-321123-2", avail: false, who: "Lisa", due: "1/3/23"}
- ];
+];
 
+//Map of books by id and title
 const booksMap = new Map();
 books.forEach(book => {
     booksMap.set(book.id, { id: book.id, title: book.title });
@@ -30,22 +32,8 @@ app.get("/books", (req, res) => {
    const avail = req.query.avail === "true";
 
    if (req.query.avail!==undefined)
-   {
-      if (avail)
-      { 
-         const availBooks = books.filter((book) => book.avail === true);
-         const filteredAvailBooksData = showIDandTitle(availBooks); 
-         res.status(200).json(filteredAvailBooksData); ; 
-         return;
-      } 
-      else if (!avail)
-      {
-         const unavailBooks = books.filter((book) => book.avail === false); 
-         const filteredUnavailBooksData = showIDandTitle(unavailBooks);  
-         res.status(200).json(filteredUnavailBooksData); 
-         return;
-      }
-   }
+      filterBooksByAvail(avail, res);   
+
    else
    {
       booksInfo = showIDandTitle(books); 
@@ -57,16 +45,28 @@ app.get("/books", (req, res) => {
       }
       else 
       { 
-         res.status(404).json({error:"not found"}); 
+         res.status(404).json({error:"no books found"}); 
          console.log("ERROR 404: no books found.");
          return;
       }
    }
 }); 
 
+//Helper functions
+function filterBooksByAvail(avail, res) 
+{ 
+   if (avail)
+      filterBooks = books.filter((book) => book.avail === true); 
+   else 
+      filterBooks = books.filter((book) => book.avail === false); 
 
+   const filteredBooksData = showIDandTitle(filterBooks);
+   res.status(200).json(filteredBooksData); 
+   return; 
+}
 
-function showIDandTitle(availQuery) { 
+function showIDandTitle(availQuery) 
+{ 
    return availQuery.map(book => {
       const { id, title } = booksMap.get(book.id);
       return { id, title };
@@ -123,7 +123,6 @@ app.put("/books/:id", (req,res) => {
          existingBook[prop] = updateBook[prop];
       });
 
-      console.log(books[bookIndex]);
       res.status(200).send("200"); 
       console.log("200 OK");
       return;
