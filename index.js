@@ -1,4 +1,7 @@
 var express = require('express');
+const mongoose = require('./mongoose'); 
+const Book = require('./books');
+
 var app = express();
 
 app.use(express.json());
