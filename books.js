@@ -12,17 +12,6 @@ const BookSchema = new mongoose.Schema({
 });
 
 
-/*AuthorSchema.virtual("IDandTitle")
-.get( function () {
-return this.id + ", " + this.title;
-} )
-.set( function (v) {
-const i = v.indexOf(' ');
-const id = v.substring(0,i);
-const title = v.substring(i+1);
-this.set( {id,title});
-} ) */
-
 BookSchema.virtual("IDandTitle")
     .get(function () {
         return { id: this.id, title: this.title };

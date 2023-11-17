@@ -16,56 +16,40 @@ app.use(function(req, res, next) {
 });
 
 
-/*app.get("/books", (req, res) => {
-   const avail = req.query.avail === "true";
-
-   if (req.query.avail!==undefined)
-      filterBooksByAvail(avail, res);   
-
-   else
-   {
-      booksInfo = showIDandTitle(books); 
-      if (booksInfo.length > 0)
-      {
-         res.status(200).json(booksInfo); 
-         console.log("200 OK");
-         return;
-      }
-      else 
-      { 
-         res.status(404).json({error:"no books found"}); 
-         console.log("ERROR 404: no books found.");
-         return;
-      }
-   }
-}); */ 
-
-
 app.get('/books', async (req, res) => {
    try {
-       const books = await Book.find({});
-       const booksWithIDandTitle = books.map(book => ({
-           id: book.IDandTitle.id,
-           title: book.IDandTitle.title
-       }));
-       res.json(booksWithIDandTitle);
+      const avail = req.query.avail;
+      if (avail!==undefined) 
+      {
+         filteredBooks = await Book.find({ avail });
+      }
+      
+      const allBooks = await Book.find({});
+
+      if (avail)
+         responseBookList = responseBooks(filteredBooks); 
+      else 
+         responseBookList = responseBooks(allBooks); 
+
+      if (!allBooks)
+         res.status(404).send("Error 404: no books found"); 
+      else
+      res.status(200).json(responseBookList); 
    } catch (error) {
        console.error(error);
        res.status(500).send('Internal Server Error');
    }
 });
 
-//Helper functions
-function filterBooksByAvail(avail, res) 
+//helper fxn
+function responseBooks(listBooks) 
 { 
-   if (avail)
-      filterBooks = books.filter((book) => book.avail === true); 
-   else 
-      filterBooks = books.filter((book) => book.avail === false); 
+   const response = (listBooks).map(book => ({
+      id: book.IDandTitle.id,
+      title: book.IDandTitle.title
+   }));
 
-   const filteredBooksData = showIDandTitle(filterBooks);
-   res.status(200).json(filteredBooksData); 
-   return; 
+   return response;
 }
 
 
@@ -88,21 +72,26 @@ app.post("/books", (req, res) => {
    }
 }); 
 
-app.get("/books/:id", (req, res) => { 
-   const bookId = req.params.id; 
-   const book = books.find((book) => book.id === bookId); 
+app.get("/books/:id", async (req, res) => { 
+   try {
+      const bookId = req.params.id; 
+      const book = await Book.findOne({ id: bookId }).select('-_id');
 
-   if (book)
-   {
-      res.status(200).json(book); 
-      console.log("200 OK"); 
-      return;
-   }
-   else 
-   {
-      res.status(404).json({error:"not found"}); 
-      console.log("ERROR 404: book not found");
-      return;
+      if (book)
+      {
+         res.status(200).json(book); 
+         console.log("200 OK"); 
+         return;
+      }
+      else 
+      {
+         res.status(404).json({error:"not found"}); 
+         console.log("ERROR 404: book not found");
+         return;
+      }
+   } catch (error) {
+      console.error(error);
+      res.status(500).send('Internal Server Error');
    }
 });
 
