@@ -19,7 +19,8 @@ app.use(function(req, res, next) {
 app.get('/books', async (req, res) => {
    try {
       const avail = req.query.avail;
-      if (avail!==undefined) 
+
+      if (avail !== undefined) 
       {
          filteredBooks = await Book.find({ avail });
       }
@@ -32,7 +33,7 @@ app.get('/books', async (req, res) => {
          responseBookList = responseBooks(allBooks); 
 
       if (!allBooks)
-         res.status(404).send("Error 404: no books found"); 
+         res.status(404).json({error:"ERROR 404: No books found."}); 
       else
       res.status(200).json(responseBookList); 
    } catch (error) {
@@ -69,10 +70,13 @@ app.post("/books", async (req, res) => {
       else 
       { 
          console.log("ERROR 403: book already exists.");
-         res.status(403).json({error:"book already exists"});
+         res.status(403).json({error:"ERROR 403: book already exists."});
          return;
       }
-   } catch {}
+   } catch (error) {
+      console.error(error);
+      res.status(500).send('Internal Server Error');
+   }
 }); 
 
 app.get("/books/:id", async (req, res) => { 
@@ -88,8 +92,8 @@ app.get("/books/:id", async (req, res) => {
       }
       else 
       {
-         res.status(404).json({error:"not found"}); 
-         console.log("ERROR 404: book not found");
+         res.status(404).json({error:"ERROR 404: Book not found."}); 
+         console.log("ERROR 404: Book not found");
          return;
       }
    } catch (error) {
@@ -98,52 +102,60 @@ app.get("/books/:id", async (req, res) => {
    }
 });
 
-app.put("/books/:id", (req,res) => { 
+app.put("/books/:id", async (req,res) => { 
    const bookId = req.params.id; 
-   const bookIndex = books.findIndex((book) => book.id === bookId); 
-   if (bookIndex != -1) 
-   { 
-      const updateBook = req.body; 
-      const existingBook = books[bookIndex]; 
-      const updateBookKeys = Object.keys(updateBook);
+   const updateBookData = req.body; 
 
-      updateBookKeys.forEach((prop) => {
-         existingBook[prop] = updateBook[prop];
-      });
+   try { 
+      const updateBook = await Book.findOneAndUpdate( 
+         { id: bookId },
+         { $set: updateBookData },
+         { new: true });
 
-      res.status(200).send("200"); 
-      console.log("200 OK");
-      return;
+      if (updateBook)
+      {
+         res.status(200).json(updateBook); 
+         console.log("200 OK");
+         return;
+      }
+      else
+      {
+         res.status(404).json({error:"ERROR 404: book not found."}); 
+         console.log("ERROR 404: book not found.");
+         return;
+      }
+   } catch (error) {
+      console.error(error);
+      res.status(500).send('Internal Server Error');
    }
-   else 
-   { 
-      res.status(404).json({error:"not found"}); 
-      console.log("ERROR 404: book not found.");
-      return;
-   }
-
 }); 
 
-app.delete("/books/:id", (req,res) => { 
+app.delete("/books/:id", async (req,res) => { 
    const bookId = req.params.id; 
-   const bookIndex = books.findIndex((book) => book.id === bookId); 
-   if (bookIndex != -1) 
-   {
-      books.splice(bookIndex, 1); 
-      res.status(200).send("200"); 
-      console.log("200 OK"); 
-      return;
-   }
-   else 
-   { 
-      res.status(204).json({error:"not found"}); 
-      console.log("ERROR 204: nothing to delete.");
-      return;
-   }
+   try { 
+      const deleteBook = await Book.findOneAndDelete( 
+         {id: bookId});
+
+      if (deleteBook)
+      { 
+         res.status(200).send("200"); 
+         console.log("200 OK"); 
+         return;
+      }
+      else 
+      { 
+         res.status(204).json({error:"ERROR 204: nothing to delete."}); 
+         console.log("ERROR 204: nothing to delete.");
+         return;
+      }
+   } catch (error) {
+      console.error(error);
+      res.status(500).send('Internal Server Error');
+   }    
 });
 
 
 app.listen(3000, () => {
-   console.log("Server running at http://localhost:3000");
+   console.log("Server running at http://localhost:3000/books");
 });
 
