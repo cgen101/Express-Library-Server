@@ -53,23 +53,26 @@ function responseBooks(listBooks)
 }
 
 
-app.post("/books", (req, res) => { 
+app.post("/books", async (req, res) => { 
    const newBook = req.body;
-   const bookExists = books.find((book) => book.id === newBook.id); 
-   if (!bookExists)
-   {  
-      books.push(newBook); 
-      booksMap.set(newBook.id, { id: newBook.id, title: newBook.title });
-      console.log("201 OK");
-      res.status(201).send("201"); 
-      return;
-   }
-   else 
-   { 
-      console.log("ERROR 403: book already exists.");
-      res.status(403).json({error:"book already exists"});
-      return;
-   }
+   try { 
+      const bookExists = await Book.exists({id: newBook.id}); 
+      if (!bookExists)
+      {  
+         const newBookData = new Book(newBook);
+         const savedBook = await newBookData.save();
+         
+         console.log("201 OK");
+         res.status(201).json(responseBooks(newBook)); 
+         return;
+      }
+      else 
+      { 
+         console.log("ERROR 403: book already exists.");
+         res.status(403).json({error:"book already exists"});
+         return;
+      }
+   } catch {}
 }); 
 
 app.get("/books/:id", async (req, res) => { 

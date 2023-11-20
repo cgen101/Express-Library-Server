@@ -9,7 +9,8 @@ const BookSchema = new mongoose.Schema({
     avail: { type: Boolean},
     who: { type: String },
     due: { type: String}
-});
+}, { versionKey: false });
+
 
 
 BookSchema.virtual("IDandTitle")
