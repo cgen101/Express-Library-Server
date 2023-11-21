@@ -1,3 +1,9 @@
+//Author: Chloe Gentry 
+//Last modified: 11/21/2023
+//File name: index.js- express server code modified to support mongo
+//Mongo Atlas connection string: 
+//    mongodb+srv://chloegentry:libraryDatabase@cluster0.k3xsof1.mongodb.net/LibraryDatabase
+
 var express = require('express');
 const mongoose = require('./mongoose'); 
 const Book = require('./books');
@@ -15,7 +21,7 @@ app.use(function(req, res, next) {
    else next(); 
 });
 
-
+//Displays all books, or books filtered by availability 
 app.get('/books', async (req, res) => {
    try {
       const avail = req.query.avail;
@@ -42,7 +48,7 @@ app.get('/books', async (req, res) => {
    }
 });
 
-//helper fxn
+//helper fxn to display id and title
 function responseBooks(listBooks) 
 { 
    const response = (listBooks).map(book => ({
@@ -53,7 +59,7 @@ function responseBooks(listBooks)
    return response;
 }
 
-
+//Adds a new book to the database
 app.post("/books", async (req, res) => { 
    const newBook = req.body;
    try { 
@@ -62,9 +68,8 @@ app.post("/books", async (req, res) => {
       {  
          const newBookData = new Book(newBook);
          const savedBook = await newBookData.save();
-         
          console.log("201 OK");
-         res.status(201).json(responseBooks(newBook)); 
+         res.status(201).json(`{"id":"${newBookData.id}", "title":"${newBookData.title}"`); 
          return;
       }
       else 
@@ -79,6 +84,7 @@ app.post("/books", async (req, res) => {
    }
 }); 
 
+//Gets all book info for a specific book id
 app.get("/books/:id", async (req, res) => { 
    try {
       const bookId = req.params.id; 
@@ -102,6 +108,7 @@ app.get("/books/:id", async (req, res) => {
    }
 });
 
+//Updates a book's info based on book id
 app.put("/books/:id", async (req,res) => { 
    const bookId = req.params.id; 
    const updateBookData = req.body; 
@@ -130,6 +137,7 @@ app.put("/books/:id", async (req,res) => {
    }
 }); 
 
+//Deletes a book based on book id
 app.delete("/books/:id", async (req,res) => { 
    const bookId = req.params.id; 
    try { 

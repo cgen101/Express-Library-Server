@@ -1,3 +1,7 @@
+//Author: Chloe Gentry
+//Last modified: 11/21/2023
+//File name: mongoose.js- mongo config file
+
 const mongoose = require("mongoose"); 
 const mongoCS = "mongodb+srv://chloegentry:libraryDatabase@cluster0.k3xsof1.mongodb.net/LibraryDatabase"
 
