@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Capstone- full-stack library database</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>>
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        const ShowHomePage = ({ onCheckOutClick, onReturnClick }) => {
+        return (
+          <div>
+            <h1>Welcome to the Library!</h1>
+            <button onClick={onCheckOutClick}>Check Out A Book</button>
+            <button onClick={onReturnClick}>Return A Book</button>
+          </div>
+        );
+      };
+
+      const ShowAvailableBooks = () => {
+        const [availableBooks, setAvailableBooks] = useState([]);
+        useEffect(() => {
+            fetch('http://localhost:3000/books?avail=true')
+            .then((response) => response.json())
+            .then((data) => {
+            setAvailableBooks(data);
+        })
+        .catch((error) => console.error('Error fetching available books:', error));
+        }, []);
+
+        return (
+            <div>
+            <h1>Available Books</h1>
+            <table>
+                <tbody>
+                    {availableBooks.map((book) => (
+                    <tr key={book.id}>
+                        <td>{book.title}</td>
+                        <td>{book.author}</td>
+                        <td>
+                        <button>Check Out</button>
+                        </td>
+                    </tr>
+                    ))}
+                </tbody>
+            </table>
+            </div>
+        );
+    };
+
+      const ShowUnavailableBooks = () => {
+        // Logic to fetch and display unavailable books
+        return (
+          <div>
+            <h1>Unavailable Books</h1>
+            {/* Display unavailable books here */}
+          </div>
+        );
+      };
+
+      const App = () => {
+        const [currentView, setCurrentView] = useState('home');
+
+        const handleCheckOutClick = () => {
+          setCurrentView('availableBooks');
+        };
+
+        const handleReturnClick = () => {
+          setCurrentView('unavailableBooks');
+        };
+
+        return (
+          <div className="body">
+            {currentView === 'home' && (
+              <div className="HomePage">
+                <ShowHomePage
+                  onCheckOutClick={handleCheckOutClick}
+                  onReturnClick={handleReturnClick} />
+              </div>
+            )}
+
+            {currentView === 'availableBooks' && (
+              <div className="AvailableBooks">
+                <ShowAvailableBooks />
+              </div>
+            )}
+
+            {currentView === 'unavailableBooks' && (
+              <div className="UnavailableBooks">
+                <ShowUnavailableBooks />
+              </div>
+            )}
+          </div>
+        );
+      };
+    </script>
+  </head>
+
+  <body>
+    <div id="root"></div>
+    <script type="text/babel">
+      const root = ReactDOM.createRoot(document.getElementById('root'));
+      root.render(<App />);
+    </script>
+  </body>
+</html>
