@@ -1,0 +1,102 @@
+[
+    {
+      "id": "1",
+      "title": "The Great Gatsby",
+      "author": "F. Scott Fitzgerald",
+      "publisher": "Scribner",
+      "isbn": "978-0-7432-7356-5",
+      "avail": true,
+      "who": null,
+      "due": null
+    },
+    {
+      "id": "2",
+      "title": "To Kill a Mockingbird",
+      "author": "Harper Lee",
+      "publisher": "J.B. Lippincott & Co.",
+      "isbn": "978-0-06-112008-4",
+      "avail": true,
+      "who": null,
+      "due": null
+    },
+    {
+      "id": "3",
+      "title": "1984",
+      "author": "George Orwell",
+      "publisher": "Secker & Warburg",
+      "isbn": "978-0-452-28423-4",
+      "avail": true,
+      "who": null,
+      "due": null
+    },
+    {
+      "id": "4",
+      "title": "The Catcher in the Rye",
+      "author": "J.D. Salinger",
+      "publisher": "Little, Brown and Company",
+      "isbn": "978-0-316-76948-0",
+      "avail": true,
+      "who": null,
+      "due": null
+    },
+    {
+      "id": "5",
+      "title": "Harry Potter and the Sorcerer's Stone",
+      "author": "J.K. Rowling",
+      "publisher": "Scholastic",
+      "isbn": "978-0-590-35340-3",
+      "avail": false,
+      "who": "Marty Mcfly",
+      "due": "1/1/99"
+    },
+    {
+      "id": "6",
+      "title": "The Fellowship of the Ring",
+      "author": "J.R.R. Tolkien",
+      "publisher": "George Allen & Unwin",
+      "isbn": "978-0-544-38371-3",
+      "avail": false,
+      "who": "George Washington",
+      "due": "2/22/32"
+    },
+    {
+      "id": "7",
+      "title": "The Hunger Games",
+      "author": "Suzanne Collins",
+      "publisher": "Scholastic",
+      "isbn": "978-0-439-02352-8",
+      "avail": false,
+      "who": "Katpiss Neverclean",
+      "due": "2/3/44"
+    },
+    {
+      "id": "8",
+      "title": "The Da Vinci Code",
+      "author": "Dan Brown",
+      "publisher": "Doubleday",
+      "isbn": "978-0-385-50420-5",
+      "avail": false,
+      "who": "Nicholas Cage",
+      "due": "8/8/88"
+    },
+    {
+      "id": "9",
+      "title": "The Girl on the Train",
+      "author": "Paula Hawkins",
+      "publisher": "Riverhead Books",
+      "isbn": "978-1-59558-994-7",
+      "avail": false,
+      "who": "Santa Clause",
+      "due": "12/25/23"
+    },
+    {
+      "id": "10",
+      "title": "Educated",
+      "author": "Tara Westover",
+      "publisher": "Random House",
+      "isbn": "978-1-9848-1592-4",
+      "avail": true,
+      "who": null,
+      "due": null
+    }
+  ]
