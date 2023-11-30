@@ -10,179 +10,179 @@
         const { useState, useEffect } = React;
 
         const ShowHomePage = ({ onCheckOutClick, onReturnClick }) => {
-        return (
-          <div>
-            <h1>Welcome to the Library!</h1>
-            <button onClick={onCheckOutClick}>Check Out A Book</button>
-            <button onClick={onReturnClick}>Return A Book</button>
-          </div>
-        );
-      };
-
-      const ShowAvailableBooks = ({onCheckOut, onBackToHome}) => {
-        const [availableBooks, setAvailableBooks] = useState([]);
-        useEffect(() => {
-            fetch('http://localhost:3000/books?avail=true')
-            .then((response) => response.json())
-            .then((data) => {
-            setAvailableBooks(data);
-        })
-        .catch((error) => console.error('Error fetching available books:', error));
-        }, []);
-
-        return (
-            <div>
-            <h1>Available Books</h1>
-            <div className="availTable">
-            <table>
-                <tbody>
-                    {availableBooks.map((book) => (
-                    <tr key={book.id}>
-                        <td>{book.title}</td>
-                        <td>{book.author}</td>
-                        <td>
-                        <button onClick={() => onCheckOut(book.id)}>Check Out</button>
-                        </td>
-                    </tr>
-                    ))}
-                </tbody>
-            </table>
+            return (
+            <div className="homePage">
+                <h1>Welcome to the Library!</h1>
+                <button onClick={onCheckOutClick}>Check Out A Book</button>
+                <button onClick={onReturnClick}>Return A Book</button>
             </div>
+            );
+        };
+
+        const ShowAvailableBooks = ({onCheckOut, onBackToHome}) => {
+            const [availableBooks, setAvailableBooks] = useState([]);
+            useEffect(() => {
+                fetch('http://localhost:3000/books?avail=true')
+                .then((response) => response.json())
+                .then((data) => {
+                setAvailableBooks(data);
+            })
+            .catch((error) => console.error('Error fetching available books:', error));
+            }, []);
+
+            return (
+                <div className="availPage">
+                <h1>Available Books</h1>
+                <div className="availTable">
+                <table>
+                    <tbody>
+                        {availableBooks.map((book) => (
+                        <tr key={book.id}>
+                            <td>{book.title}</td>
+                            <td>{book.author}</td>
+                            <td>
+                            <button onClick={() => onCheckOut(book.id)}>Check Out</button>
+                            </td>
+                        </tr>
+                        ))}
+                    </tbody>
+                </table>
+                </div>
+                    <button onClick={onBackToHome}>Go Back</button>
+                </div>
+            );
+        };
+
+        const ShowUnavailableBooks = ({ onReturn, onBackToHome }) => {
+            const [unavailableBooks, setUnavailableBooks] = useState([]);
+            useEffect(() => {
+                fetch('http://localhost:3000/books?avail=false')
+                .then((response) => response.json())
+                .then((data) => {
+                setUnavailableBooks(data);
+            })
+            .catch((error) => console.error('Error fetching unavailable books:', error));
+            }, []);
+
+            return (
+                <div className="unavailPage">
+                <h1>Return your book here</h1>
+                <div className="unavailTable">
+                <table>
+                    <tbody>
+                        {unavailableBooks.map((book) => (
+                        <tr key={book.id}>
+                            <td>{book.title}</td>
+                            <td>{book.author}</td>
+                            <td>
+                            <button onClick={() => onReturn(book.id)}>Return</button>
+                            </td>
+                        </tr>
+                        ))}
+                    </tbody>
+                </table>
+                </div>
                 <button onClick={onBackToHome}>Go Back</button>
-            </div>
-        );
-    };
-
-      const ShowUnavailableBooks = ({ onReturn, onBackToHome }) => {
-        const [unavailableBooks, setUnavailableBooks] = useState([]);
-        useEffect(() => {
-            fetch('http://localhost:3000/books?avail=false')
-            .then((response) => response.json())
-            .then((data) => {
-            setUnavailableBooks(data);
-        })
-        .catch((error) => console.error('Error fetching unavailable books:', error));
-        }, []);
-
-        return (
-            <div>
-            <h1>Return your book here</h1>
-            <div className="unavailTable">
-            <table>
-                <tbody>
-                    {unavailableBooks.map((book) => (
-                    <tr key={book.id}>
-                        <td>{book.title}</td>
-                        <td>{book.author}</td>
-                        <td>
-                        <button onClick={() => onReturn(book.id)}>Return</button>
-                        </td>
-                    </tr>
-                    ))}
-                </tbody>
-            </table>
-            </div>
-            <button onClick={onBackToHome}>Go Back</button>
-            </div>
-        );
-      };
-
-      const App = () => {
-        const [currentView, setCurrentView] = useState('home');
-
-        const handleCheckOutClick = () => {
-          setCurrentView('availableBooks');
+                </div>
+            );
         };
 
-        const handleReturnClick = () => {
-          setCurrentView('unavailableBooks');
-        };
+        const App = () => {
+            const [currentView, setCurrentView] = useState('home');
 
-        const handleCheckOut = async (bookId) => {
-            let userName;
-            do {
-                userName = prompt("Please enter your name:");
-            } while (!userName);
+            const handleCheckOutClick = () => {
+                setCurrentView('availableBooks');
+            };
 
-            try { 
-                const response= await fetch(`http://localhost:3000/books/${bookId}`, { 
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        avail: false,
-                        who: userName,
-                        due: '9/9/99',
-                    }),
-                });               
+            const handleReturnClick = () => {
+                setCurrentView('unavailableBooks');
+            };
 
-                if (response.ok) {
-                    window.alert(`Book ${bookId} checked out successfully for ${userName}`);
-                } else {
-                    console.error('Error checking out the book:', response.status);
+            const handleCheckOut = async (bookId) => {
+                let userName;
+                do {
+                    userName = prompt("Please enter your name:");
+                } while (!userName);
+
+                try { 
+                    const response= await fetch(`http://localhost:3000/books/${bookId}`, { 
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            avail: false,
+                            who: userName,
+                            due: '9/9/99',
+                        }),
+                    });               
+
+                    if (response.ok) {
+                        window.alert(`Book ${bookId} checked out successfully for ${userName}`);
+                    } else {
+                        console.error('Error checking out the book:', response.status);
+                    }
+                } catch (error) {
+                    console.error('Error checking out the book:', error);
                 }
-            } catch (error) {
-                console.error('Error checking out the book:', error);
-            }
-        };
+            };
 
-        const handleReturn = async (bookId) => {
-            try { 
-                const response= await fetch(`http://localhost:3000/books/${bookId}`, { 
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        avail: true,
-                        who: null,
-                        due: null,
-                    }),
-                });               
+            const handleReturn = async (bookId) => {
+                try { 
+                    const response= await fetch(`http://localhost:3000/books/${bookId}`, { 
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            avail: true,
+                            who: null,
+                            due: null,
+                        }),
+                    });               
 
-                if (response.ok) {
-                    window.alert(`Book ${bookId} returned out successfully`);
-                } else {
-                    console.error('Error returning the book:', response.status);
-                }
-            } catch (error) {
-                console.error('Error returning the book:', error);
-            }                       
-        };
+                    if (response.ok) {
+                        window.alert(`Book ${bookId} returned out successfully`);
+                    } else {
+                        console.error('Error returning the book:', response.status);
+                    }
+                } catch (error) {
+                    console.error('Error returning the book:', error);
+                }                       
+            };
 
-        const handleBackToHome = () => {
+            const handleBackToHome = () => {
                 setCurrentView('home');
+            };
+
+            return (
+                <div className="body">
+                    {currentView === 'home' && (
+                    <div className="HomePage">
+                        <ShowHomePage
+                        onCheckOutClick={handleCheckOutClick}
+                        onReturnClick={handleReturnClick} />
+                    </div>
+                    )}
+
+                    {currentView === 'availableBooks' && (
+                    <div className="AvailableBooks">
+                        <ShowAvailableBooks 
+                            onCheckOut={handleCheckOut}
+                            onBackToHome={handleBackToHome} />
+                    </div>
+                    )}
+
+                    {currentView === 'unavailableBooks' && (
+                    <div className="UnavailableBooks">
+                        <ShowUnavailableBooks 
+                            onReturn={handleReturn}
+                            onBackToHome={handleBackToHome} />
+                    </div>
+                    )}
+                </div>
+            );
         };
-
-        return (
-          <div className="body">
-            {currentView === 'home' && (
-              <div className="HomePage">
-                <ShowHomePage
-                  onCheckOutClick={handleCheckOutClick}
-                  onReturnClick={handleReturnClick} />
-              </div>
-            )}
-
-            {currentView === 'availableBooks' && (
-              <div className="AvailableBooks">
-                <ShowAvailableBooks 
-                    onCheckOut={handleCheckOut}
-                    onBackToHome={handleBackToHome} />
-              </div>
-            )}
-
-            {currentView === 'unavailableBooks' && (
-              <div className="UnavailableBooks">
-                <ShowUnavailableBooks 
-                    onReturn={handleReturn}
-                    onBackToHome={handleBackToHome} />
-              </div>
-            )}
-          </div>
-        );
-      };
     </script>
   </head>
 
