@@ -19,7 +19,7 @@
         );
       };
 
-      const ShowAvailableBooks = ({onCheckOut}) => {
+      const ShowAvailableBooks = ({onCheckOut, onBackToHome}) => {
         const [availableBooks, setAvailableBooks] = useState([]);
         useEffect(() => {
             fetch('http://localhost:3000/books?avail=true')
@@ -48,11 +48,12 @@
                 </tbody>
             </table>
             </div>
+                <button onClick={onBackToHome}>Go Back</button>
             </div>
         );
     };
 
-      const ShowUnavailableBooks = ({ onReturn }) => {
+      const ShowUnavailableBooks = ({ onReturn, onBackToHome }) => {
         const [unavailableBooks, setUnavailableBooks] = useState([]);
         useEffect(() => {
             fetch('http://localhost:3000/books?avail=false')
@@ -81,6 +82,7 @@
                 </tbody>
             </table>
             </div>
+            <button onClick={onBackToHome}>Go Back</button>
             </div>
         );
       };
@@ -146,7 +148,11 @@
                 }
             } catch (error) {
                 console.error('Error returning the book:', error);
-            }
+            }                       
+        };
+
+        const handleBackToHome = () => {
+                setCurrentView('home');
         };
 
         return (
@@ -162,14 +168,16 @@
             {currentView === 'availableBooks' && (
               <div className="AvailableBooks">
                 <ShowAvailableBooks 
-                    onCheckOut={handleCheckOut} />
+                    onCheckOut={handleCheckOut}
+                    onBackToHome={handleBackToHome} />
               </div>
             )}
 
             {currentView === 'unavailableBooks' && (
               <div className="UnavailableBooks">
                 <ShowUnavailableBooks 
-                    onReturn={handleReturn} />
+                    onReturn={handleReturn}
+                    onBackToHome={handleBackToHome} />
               </div>
             )}
           </div>
