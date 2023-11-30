@@ -19,7 +19,7 @@
         );
       };
 
-      const ShowAvailableBooks = () => {
+      const ShowAvailableBooks = ({onCheckOut}) => {
         const [availableBooks, setAvailableBooks] = useState([]);
         useEffect(() => {
             fetch('http://localhost:3000/books?avail=true')
@@ -33,6 +33,7 @@
         return (
             <div>
             <h1>Available Books</h1>
+            <div className="availTable">
             <table>
                 <tbody>
                     {availableBooks.map((book) => (
@@ -40,12 +41,13 @@
                         <td>{book.title}</td>
                         <td>{book.author}</td>
                         <td>
-                        <button>Check Out</button>
+                        <button onClick={() => onCheckOut(book.id)}>Check Out</button>
                         </td>
                     </tr>
                     ))}
                 </tbody>
             </table>
+            </div>
             </div>
         );
     };
@@ -71,6 +73,35 @@
           setCurrentView('unavailableBooks');
         };
 
+        const handleCheckOut = async (bookId) => {
+            let userName;
+            do {
+                userName = prompt("Please enter your name:");
+            } while (!userName);
+
+            try { 
+                const response= await fetch(`http://localhost:3000/books/${bookId}`, { 
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        avail: false,
+                        who: userName,
+                        due: '9/9/99',
+                    }),
+                });               
+
+                if (response.ok) {
+                    window.alert(`Book ${bookId} checked out successfully for ${userName}`);
+                } else {
+                    console.error('Error checking out the book:', response.status);
+                }
+                } catch (error) {
+                    console.error('Error checking out the book:', error);
+                }
+            };
+
         return (
           <div className="body">
             {currentView === 'home' && (
@@ -83,7 +114,8 @@
 
             {currentView === 'availableBooks' && (
               <div className="AvailableBooks">
-                <ShowAvailableBooks />
+                <ShowAvailableBooks 
+                    onCheckOut={handleCheckOut}/>
               </div>
             )}
 
