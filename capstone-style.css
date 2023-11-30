@@ -1,0 +1,47 @@
+
+.homePage {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    grid-template-rows: repeat(6, 1fr);
+    grid-column-gap: 0px;
+    grid-row-gap: 0px;
+    font-family: 'Courier New', Courier, monospace;
+    background-image: url("https://images.unsplash.com/photo-1588580000645-4562a6d2c839?q=80&w=2670&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D");
+    background-position: center;
+    background-size: cover;
+}
+
+.homePage button { 
+    width: 450px; 
+    height: 500px;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 50px;
+    font-weight: bold;
+    background-color:antiquewhite;
+    border-radius: 20px;
+
+}
+    
+.welcome { 
+    grid-area: 1 / 2 / 2 / 8;
+    display: flex; 
+    align-items: center; 
+    justify-content: center;
+    color: antiquewhite;
+    font-size: 25px;
+    text-shadow: 3px 3px 3px #0e0808;
+}
+.check { 
+    grid-area: 2 / 2 / 7 / 5; 
+    height: 520px;
+    display: flex;
+    align-items: center; 
+    justify-content: center;
+}
+.return { 
+    grid-area: 2 / 5 / 7 / 8;  
+    height: 520px;
+    display: flex;
+    align-items: center; 
+    justify-content: center;
+}
