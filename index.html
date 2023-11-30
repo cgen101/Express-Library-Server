@@ -5,7 +5,7 @@
     <title>Capstone- full-stack library database</title>
     <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script type="text/babel">
         const { useState, useEffect } = React;
 
@@ -52,13 +52,36 @@
         );
     };
 
-      const ShowUnavailableBooks = () => {
-        // Logic to fetch and display unavailable books
+      const ShowUnavailableBooks = ({ onReturn }) => {
+        const [unavailableBooks, setUnavailableBooks] = useState([]);
+        useEffect(() => {
+            fetch('http://localhost:3000/books?avail=false')
+            .then((response) => response.json())
+            .then((data) => {
+            setUnavailableBooks(data);
+        })
+        .catch((error) => console.error('Error fetching unavailable books:', error));
+        }, []);
+
         return (
-          <div>
-            <h1>Unavailable Books</h1>
-            {/* Display unavailable books here */}
-          </div>
+            <div>
+            <h1>Return your book here</h1>
+            <div className="unavailTable">
+            <table>
+                <tbody>
+                    {unavailableBooks.map((book) => (
+                    <tr key={book.id}>
+                        <td>{book.title}</td>
+                        <td>{book.author}</td>
+                        <td>
+                        <button onClick={() => onReturn(book.id)}>Return</button>
+                        </td>
+                    </tr>
+                    ))}
+                </tbody>
+            </table>
+            </div>
+            </div>
         );
       };
 
@@ -97,10 +120,34 @@
                 } else {
                     console.error('Error checking out the book:', response.status);
                 }
-                } catch (error) {
-                    console.error('Error checking out the book:', error);
+            } catch (error) {
+                console.error('Error checking out the book:', error);
+            }
+        };
+
+        const handleReturn = async (bookId) => {
+            try { 
+                const response= await fetch(`http://localhost:3000/books/${bookId}`, { 
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        avail: true,
+                        who: null,
+                        due: null,
+                    }),
+                });               
+
+                if (response.ok) {
+                    window.alert(`Book ${bookId} returned out successfully`);
+                } else {
+                    console.error('Error returning the book:', response.status);
                 }
-            };
+            } catch (error) {
+                console.error('Error returning the book:', error);
+            }
+        };
 
         return (
           <div className="body">
@@ -115,13 +162,14 @@
             {currentView === 'availableBooks' && (
               <div className="AvailableBooks">
                 <ShowAvailableBooks 
-                    onCheckOut={handleCheckOut}/>
+                    onCheckOut={handleCheckOut} />
               </div>
             )}
 
             {currentView === 'unavailableBooks' && (
               <div className="UnavailableBooks">
-                <ShowUnavailableBooks />
+                <ShowUnavailableBooks 
+                    onReturn={handleReturn} />
               </div>
             )}
           </div>
