@@ -3,6 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <title>Capstone- full-stack library database</title>
+    <link rel="stylesheet" href="capstone-style.css">
     <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -12,9 +13,15 @@
         const ShowHomePage = ({ onCheckOutClick, onReturnClick }) => {
             return (
             <div className="homePage">
+                <div className="welcome">
                 <h1>Welcome to the Library!</h1>
+                </div>
+                <div className="check">
                 <button onClick={onCheckOutClick}>Check Out A Book</button>
+                </div>
+                <div className="return">
                 <button onClick={onReturnClick}>Return A Book</button>
+                </div>
             </div>
             );
         };
@@ -31,9 +38,11 @@
             }, []);
 
             return (
-                <div className="availPage">
+                <div className="actionPage">
+                <div className="actionHead">
                 <h1>Available Books</h1>
-                <div className="availTable">
+                </div>
+                <div className="bookList">
                 <table>
                     <tbody>
                         {availableBooks.map((book) => (
@@ -48,7 +57,9 @@
                     </tbody>
                 </table>
                 </div>
-                    <button onClick={onBackToHome}>Go Back</button>
+                <div className="goBack"> 
+                <button onClick={onBackToHome}>Go Back</button>
+                </div>
                 </div>
             );
         };
@@ -65,9 +76,11 @@
             }, []);
 
             return (
-                <div className="unavailPage">
-                <h1>Return your book here</h1>
-                <div className="unavailTable">
+                <div className="actionPage">
+                <div className="actionHead">
+                <h1>Return a Book</h1>
+                </div>
+                <div className="bookList">
                 <table>
                     <tbody>
                         {unavailableBooks.map((book) => (
@@ -82,7 +95,9 @@
                     </tbody>
                 </table>
                 </div>
+                <div className="goBack">
                 <button onClick={onBackToHome}>Go Back</button>
+                </div>
                 </div>
             );
         };
@@ -115,12 +130,24 @@
                             who: userName,
                             due: '9/9/99',
                         }),
-                    });               
-
-                    if (response.ok) {
-                        window.alert(`Book ${bookId} checked out successfully for ${userName}`);
+                    });      
+                    if (response.ok) {         
+                    const bookInfoResponse = await fetch(`http://localhost:3000/books/${bookId}`, { 
+                        method: 'GET', 
+                    });
+                        if (bookInfoResponse.ok) {
+                            const bookInfo = await bookInfoResponse.json();
+                            const bookTitle = bookInfo.title;
+                            const returnDate = bookInfo.due; 
+                        window.alert(`"${bookTitle}" checked out successfully for ${userName}. 
+                            Return by ${returnDate}. Please refresh page.`);
+                        } else { 
+                            console.error('Error checking out the book:', response.status);
+                            window.alert('Error checking out book.');
+                        }
                     } else {
                         console.error('Error checking out the book:', response.status);
+                        window.alert('Error checking out book.');
                     }
                 } catch (error) {
                     console.error('Error checking out the book:', error);
@@ -142,9 +169,21 @@
                     });               
 
                     if (response.ok) {
-                        window.alert(`Book ${bookId} returned out successfully`);
+                        const bookInfoResponse = await fetch(`http://localhost:3000/books/${bookId}`, { 
+                        method: 'GET', 
+                    });
+                        if (bookInfoResponse.ok) {
+                            const bookInfo = await bookInfoResponse.json();
+                            const bookTitle = bookInfo.title;
+                            const returnDate = bookInfo.due; 
+                            window.alert(`"${bookTitle}" returned successfully. Please refresh page.`);
+                        } else { 
+                            console.error('Error returning book:', response.status);
+                            window.alert('Error returning book.');
+                        }
                     } else {
-                        console.error('Error returning the book:', response.status);
+                        console.error('Error returning', response.status);
+                        window.alert('Error returning book.');
                     }
                 } catch (error) {
                     console.error('Error returning the book:', error);
