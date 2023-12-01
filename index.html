@@ -115,10 +115,10 @@
 
             const handleCheckOut = async (bookId) => {
                 let userName;
-                do {
+                //do {
                     userName = prompt("Please enter your name:");
-                } while (!userName);
-
+                //} while (!userName);
+                if (userName) {
                 try { 
                     const response= await fetch(`http://localhost:3000/books/${bookId}`, { 
                         method: 'PUT',
@@ -152,6 +152,9 @@
                 } catch (error) {
                     console.error('Error checking out the book:', error);
                 }
+            } else { 
+                window.alert('Checkout cancelled')
+            }
             };
 
             const handleReturn = async (bookId) => {
