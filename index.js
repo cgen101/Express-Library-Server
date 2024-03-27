@@ -1,4 +1,13 @@
+//Author: Chloe Gentry 
+//Last modified: 11/21/2023
+//File name: index.js- express server code modified to support mongo
+//Mongo Atlas connection string: 
+//    mongodb+srv://chloegentry:libraryDatabase@cluster0.k3xsof1.mongodb.net/LibraryDatabase
+
 var express = require('express');
+const mongoose = require('./mongoose'); 
+const Book = require('./books');
+
 var app = express();
 
 app.use(express.json());
@@ -12,150 +21,149 @@ app.use(function(req, res, next) {
    else next(); 
 });
 
+//Displays all books, or books filtered by availability 
+app.get('/books', async (req, res) => {
+   try {
+      const avail = req.query.avail;
 
-let books = [
-    {id: "1", title: "Reactions in REACT", author: "Ben Dover", publisher: "Random House", isbn: "978-3-16-148410-0", avail: true},
-    {id: "2", title: "Express-sions", author: "Freida Livery", publisher: "Chaotic House", isbn: "978-3-16-148410-2", avail: true},
-    {id: "3", title: "Restful REST", author: "Al Gorithm", publisher: "ACM", isbn: "978-3-16-143310-1", avail: true},
-    {id: "4", title: "See Essess", author: "Anna Log", publisher: "O'Reilly", isbn: "987-6-54-148220-1", avail: false, who: "Homer", due: "1/1/23"},
-    {id: "5", title: "Scripting in JS", author: "Dee Gital", publisher: "IEEE", isbn: "987-6-54-321123-1", avail: false, who: "Marge", due: "1/2/23"},
-    {id: "6", title: "Be An HTML Hero", author: "Jen Neric", publisher: "Coders-R-Us", isbn: "987-6-54-321123-2", avail: false, who: "Lisa", due: "1/3/23"}
-];
+      if (avail !== undefined) 
+      {
+         filteredBooks = await Book.find({ avail });
+      }
+      
+      const allBooks = await Book.find({});
 
-//Map of books by id and title
-const booksMap = new Map();
-books.forEach(book => {
-    booksMap.set(book.id, { id: book.id, title: book.title });
+      if (avail)
+         responseBookList = responseBooks(filteredBooks); 
+      else 
+         responseBookList = responseBooks(allBooks); 
+
+      if (!allBooks)
+         res.status(404).json({error:"ERROR 404: No books found."}); 
+      else
+      res.status(200).json(responseBookList); 
+   } catch (error) {
+       console.error(error);
+       res.status(500).send('Internal Server Error');
+   }
 });
 
-app.get("/books", (req, res) => {
-   const avail = req.query.avail === "true";
+//helper fxn to display id and title
+function responseBooks(listBooks) 
+{ 
+   const response = (listBooks).map(book => ({
+      id: book.IDandTitle.id,
+      title: book.IDandTitle.title
+   }));
 
-   if (req.query.avail!==undefined)
-      filterBooksByAvail(avail, res);   
+   return response;
+}
 
-   else
-   {
-      booksInfo = showIDandTitle(books); 
-      if (booksInfo.length > 0)
-      {
-         res.status(200).json(booksInfo); 
-         console.log("200 OK");
+//Adds a new book to the database
+app.post("/books", async (req, res) => { 
+   const newBook = req.body;
+   try { 
+      const bookExists = await Book.exists({id: newBook.id}); 
+      if (!bookExists)
+      {  
+         const newBookData = new Book(newBook);
+         const savedBook = await newBookData.save();
+         console.log("201 OK");
+         res.status(201).json(`{"id":"${newBookData.id}", "title":"${newBookData.title}"`); 
          return;
       }
       else 
       { 
-         res.status(404).json({error:"no books found"}); 
-         console.log("ERROR 404: no books found.");
+         console.log("ERROR 403: book already exists.");
+         res.status(403).json({error:"ERROR 403: book already exists."});
          return;
       }
+   } catch (error) {
+      console.error(error);
+      res.status(500).send('Internal Server Error');
    }
 }); 
 
-//Helper functions
-function filterBooksByAvail(avail, res) 
-{ 
-   if (avail)
-      filterBooks = books.filter((book) => book.avail === true); 
-   else 
-      filterBooks = books.filter((book) => book.avail === false); 
+//Gets all book info for a specific book id
+app.get("/books/:id", async (req, res) => { 
+   try {
+      const bookId = req.params.id; 
+      const book = await Book.findOne({ id: bookId }).select('-_id');
 
-   const filteredBooksData = showIDandTitle(filterBooks);
-   res.status(200).json(filteredBooksData); 
-   return; 
-}
-
-function showIDandTitle(availQuery) 
-{ 
-   return availQuery.map(book => {
-      const { id, title } = booksMap.get(book.id);
-      return { id, title };
-   }); 
-}
-
-app.post("/books", (req, res) => { 
-   const newBook = req.body;
-   const bookExists = books.find((book) => book.id === newBook.id); 
-   if (!bookExists)
-   {  
-      books.push(newBook); 
-      booksMap.set(newBook.id, { id: newBook.id, title: newBook.title });
-      console.log("201 OK");
-      res.status(201).send("201"); 
-      return;
-   }
-   else 
-   { 
-      console.log("ERROR 403: book already exists.");
-      res.status(403).json({error:"book already exists"});
-      return;
-   }
-}); 
-
-app.get("/books/:id", (req, res) => { 
-   const bookId = req.params.id; 
-   const book = books.find((book) => book.id === bookId); 
-
-   if (book)
-   {
-      res.status(200).json(book); 
-      console.log("200 OK"); 
-      return;
-   }
-   else 
-   {
-      res.status(404).json({error:"not found"}); 
-      console.log("ERROR 404: book not found");
-      return;
+      if (book)
+      {
+         res.status(200).json(book); 
+         console.log("200 OK"); 
+         return;
+      }
+      else 
+      {
+         res.status(404).json({error:"ERROR 404: Book not found."}); 
+         console.log("ERROR 404: Book not found");
+         return;
+      }
+   } catch (error) {
+      console.error(error);
+      res.status(500).send('Internal Server Error');
    }
 });
 
-app.put("/books/:id", (req,res) => { 
+//Updates a book's info based on book id
+app.put("/books/:id", async (req,res) => { 
    const bookId = req.params.id; 
-   const bookIndex = books.findIndex((book) => book.id === bookId); 
-   if (bookIndex != -1) 
-   { 
-      const updateBook = req.body; 
-      const existingBook = books[bookIndex]; 
-      const updateBookKeys = Object.keys(updateBook);
+   const updateBookData = req.body; 
 
-      updateBookKeys.forEach((prop) => {
-         existingBook[prop] = updateBook[prop];
-      });
+   try { 
+      const updateBook = await Book.findOneAndUpdate( 
+         { id: bookId },
+         { $set: updateBookData },
+         { new: true });
 
-      res.status(200).send("200"); 
-      console.log("200 OK");
-      return;
+      if (updateBook)
+      {
+         res.status(200).json(updateBook); 
+         console.log("200 OK");
+         return;
+      }
+      else
+      {
+         res.status(404).json({error:"ERROR 404: book not found."}); 
+         console.log("ERROR 404: book not found.");
+         return;
+      }
+   } catch (error) {
+      console.error(error);
+      res.status(500).send('Internal Server Error');
    }
-   else 
-   { 
-      res.status(404).json({error:"not found"}); 
-      console.log("ERROR 404: book not found.");
-      return;
-   }
-
 }); 
 
-app.delete("/books/:id", (req,res) => { 
+//Deletes a book based on book id
+app.delete("/books/:id", async (req,res) => { 
    const bookId = req.params.id; 
-   const bookIndex = books.findIndex((book) => book.id === bookId); 
-   if (bookIndex != -1) 
-   {
-      books.splice(bookIndex, 1); 
-      res.status(200).send("200"); 
-      console.log("200 OK"); 
-      return;
-   }
-   else 
-   { 
-      res.status(204).json({error:"not found"}); 
-      console.log("ERROR 204: nothing to delete.");
-      return;
-   }
+   try { 
+      const deleteBook = await Book.findOneAndDelete( 
+         {id: bookId});
+
+      if (deleteBook)
+      { 
+         res.status(200).send("200"); 
+         console.log("200 OK"); 
+         return;
+      }
+      else 
+      { 
+         res.status(204).json({error:"ERROR 204: nothing to delete."}); 
+         console.log("ERROR 204: nothing to delete.");
+         return;
+      }
+   } catch (error) {
+      console.error(error);
+      res.status(500).send('Internal Server Error');
+   }    
 });
 
 
 app.listen(3000, () => {
-   console.log("Server running at http://localhost:3000");
+   console.log("Server running at http://localhost:3000/books");
 });
 
