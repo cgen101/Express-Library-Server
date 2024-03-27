@@ -1,0 +1,127 @@
+body { 
+    background-color: antiquewhite;
+    font-family: 'Courier New', Courier, monospace;
+    background-image: url("https://images.unsplash.com/photo-1505488387362-48bc38155987?q=80&w=2671&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D");
+    background-position: center;
+    background-size: cover;
+    background-attachment: fixed;
+}
+.homePage {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr);
+    grid-template-rows: repeat(6, 1fr);
+    grid-column-gap: 0px;
+    grid-row-gap: 0px;
+    font-family: 'Courier New', Courier, monospace;
+}
+
+.homePage button { 
+    width: 450px; 
+    height: 500px;
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 50px;
+    font-weight: bold;
+    background-color:antiquewhite;
+    border-radius: 20px;
+    opacity: 0.75;
+    
+}
+
+.homePage button:hover { 
+    background-color: #B99470;
+    color:antiquewhite;
+    cursor: pointer;
+}
+    
+.welcome { 
+    grid-area: 1 / 2 / 2 / 8;
+    display: flex; 
+    align-items: center; 
+    justify-content: center;
+
+    color:antiquewhite; 
+    font-size: 25px; 
+    text-shadow: -1px 1px 0 #000, 
+                  2px 2px 0 #000, 
+                 1px -1px 0 #000, 
+                -1px -1px 0 #000; 
+} 
+
+.check { 
+    grid-area: 2 / 2 / 7 / 5; 
+    height: 520px;
+    display: flex;
+    align-items: center; 
+    justify-content: center;
+}
+.return { 
+    grid-area: 2 / 5 / 7 / 8;  
+    height: 520px;
+    display: flex;
+    align-items: center; 
+    justify-content: center;
+}
+
+.actionPage {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    grid-template-rows: repeat(5, 1fr);
+    grid-column-gap: 0px;
+    grid-row-gap: 0px;
+}
+.actionPage h1 { 
+    color:antiquewhite;
+    font-size: 50px;
+}
+
+.actionPage button { 
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 15px;  
+    font-weight: bold;
+    background-color: #B99470;
+    border-radius: 5px;
+}
+
+.actionPage button:hover {
+    background-color: antiquewhite;
+    cursor: pointer;
+
+}
+  
+.actionHead { 
+    grid-area: 1 / 1 / 2 / 6; 
+    text-align: center;
+}
+.bookList { 
+    grid-area: 2 / 1 / 5 / 6; 
+    display: flex; 
+    justify-content: center;
+}
+.bookList table, th, td{ 
+    width: 75%;
+    padding: 10px; 
+    font-size: 20px;
+}
+
+.bookList table { 
+    background-color: #B99470;
+    box-shadow: 3px 3px 10px #0e0808;
+}
+
+.bookList tr { 
+    background-color: antiquewhite;
+}
+
+
+.goBack { 
+    grid-area: 5 / 1 / 6 / 6; 
+    display: flex; 
+    justify-content: center;
+    align-items: center;
+    margin: 25px;
+}
+
+.goBack button { 
+    align-self: start;
+    padding: 10px 15px;
+}

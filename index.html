@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Capstone- full-stack library database</title>
+    <link rel="stylesheet" href="capstone-style.css">
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        const ShowHomePage = ({ onCheckOutClick, onReturnClick }) => {
+            return (
+            <div className="homePage">
+                <div className="welcome">
+                <h1>Welcome to the Library!</h1>
+                </div>
+                <div className="check">
+                <button onClick={onCheckOutClick}>Check Out A Book</button>
+                </div>
+                <div className="return">
+                <button onClick={onReturnClick}>Return A Book</button>
+                </div>
+            </div>
+            );
+        };
+
+        const ShowAvailableBooks = ({onCheckOut, onBackToHome}) => {
+            const [availableBooks, setAvailableBooks] = useState([]);
+            useEffect(() => {
+                fetch('http://localhost:3000/books?avail=true')
+                .then((response) => response.json())
+                .then((data) => {
+                setAvailableBooks(data);
+            })
+            .catch((error) => console.error('Error fetching available books:', error));
+            }, []);
+
+            return (
+                <div className="actionPage">
+                <div className="actionHead">
+                <h1>Available Books</h1>
+                </div>
+                <div className="bookList">
+                <table>
+                    <tbody>
+                        {availableBooks.map((book) => (
+                        <tr key={book.id}>
+                            <td>{book.title}</td>
+                            <td>{book.author}</td>
+                            <td>
+                            <button onClick={() => onCheckOut(book.id)}>Check Out</button>
+                            </td>
+                        </tr>
+                        ))}
+                    </tbody>
+                </table>
+                </div>
+                <div className="goBack"> 
+                <button onClick={onBackToHome}>Go Back</button>
+                </div>
+                </div>
+            );
+        };
+
+        const ShowUnavailableBooks = ({ onReturn, onBackToHome }) => {
+            const [unavailableBooks, setUnavailableBooks] = useState([]);
+            useEffect(() => {
+                fetch('http://localhost:3000/books?avail=false')
+                .then((response) => response.json())
+                .then((data) => {
+                setUnavailableBooks(data);
+            })
+            .catch((error) => console.error('Error fetching unavailable books:', error));
+            }, []);
+
+            return (
+                <div className="actionPage">
+                <div className="actionHead">
+                <h1>Return a Book</h1>
+                </div>
+                <div className="bookList">
+                <table>
+                    <tbody>
+                        {unavailableBooks.map((book) => (
+                        <tr key={book.id}>
+                            <td>{book.title}</td>
+                            <td>{book.author}</td>
+                            <td>
+                            <button onClick={() => onReturn(book.id)}>Return</button>
+                            </td>
+                        </tr>
+                        ))}
+                    </tbody>
+                </table>
+                </div>
+                <div className="goBack">
+                <button onClick={onBackToHome}>Go Back</button>
+                </div>
+                </div>
+            );
+        };
+
+        const App = () => {
+            const [currentView, setCurrentView] = useState('home');
+
+            const handleCheckOutClick = () => {
+                setCurrentView('availableBooks');
+            };
+
+            const handleReturnClick = () => {
+                setCurrentView('unavailableBooks');
+            };
+
+            const handleCheckOut = async (bookId) => {
+                let userName;
+                userName = prompt("Please enter your name:");
+                
+                if (userName) {
+                try { 
+                    const response= await fetch(`http://localhost:3000/books/${bookId}`, { 
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            avail: false,
+                            who: userName,
+                            due: '9/9/99',
+                        }),
+                    });      
+                    if (response.ok) {         
+                    const bookInfoResponse = await fetch(`http://localhost:3000/books/${bookId}`, { 
+                        method: 'GET', 
+                    });
+                        if (bookInfoResponse.ok) {
+                            const bookInfo = await bookInfoResponse.json();
+                            const bookTitle = bookInfo.title;
+                            const returnDate = bookInfo.due; 
+                        window.alert(`"${bookTitle}" checked out successfully for ${userName}. 
+                            Return by ${returnDate}. Please refresh page.`);
+                        } else { 
+                            console.error('Error checking out the book:', response.status);
+                            window.alert('Error checking out book.');
+                        }
+                    } else {
+                        console.error('Error checking out the book:', response.status);
+                        window.alert('Error checking out book.');
+                    }
+                } catch (error) {
+                    console.error('Error checking out the book:', error);
+                }
+            } else { 
+                window.alert('Error checking out book.')
+            }
+            };
+
+            const handleReturn = async (bookId) => {
+                try { 
+                    const response= await fetch(`http://localhost:3000/books/${bookId}`, { 
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            avail: true,
+                            who: null,
+                            due: null,
+                        }),
+                    });               
+
+                    if (response.ok) {
+                        const bookInfoResponse = await fetch(`http://localhost:3000/books/${bookId}`, { 
+                        method: 'GET', 
+                    });
+                        if (bookInfoResponse.ok) {
+                            const bookInfo = await bookInfoResponse.json();
+                            const bookTitle = bookInfo.title;
+                            const returnDate = bookInfo.due; 
+                            window.alert(`"${bookTitle}" returned successfully. Please refresh page.`);
+                        } else { 
+                            console.error('Error returning book:', response.status);
+                            window.alert('Error returning book.');
+                        }
+                    } else {
+                        console.error('Error returning', response.status);
+                        window.alert('Error returning book.');
+                    }
+                } catch (error) {
+                    console.error('Error returning the book:', error);
+                }                       
+            };
+
+            const handleBackToHome = () => {
+                setCurrentView('home');
+            };
+
+            return (
+                <div className="body">
+                    {currentView === 'home' && (
+                    <div className="HomePage">
+                        <ShowHomePage
+                        onCheckOutClick={handleCheckOutClick}
+                        onReturnClick={handleReturnClick} />
+                    </div>
+                    )}
+
+                    {currentView === 'availableBooks' && (
+                    <div className="AvailableBooks">
+                        <ShowAvailableBooks 
+                            onCheckOut={handleCheckOut}
+                            onBackToHome={handleBackToHome} />
+                    </div>
+                    )}
+
+                    {currentView === 'unavailableBooks' && (
+                    <div className="UnavailableBooks">
+                        <ShowUnavailableBooks 
+                            onReturn={handleReturn}
+                            onBackToHome={handleBackToHome} />
+                    </div>
+                    )}
+                </div>
+            );
+        };
+    </script>
+  </head>
+
+  <body>
+    <div id="root"></div>
+    <script type="text/babel">
+      const root = ReactDOM.createRoot(document.getElementById('root'));
+      root.render(<App />);
+    </script>
+  </body>
+</html>

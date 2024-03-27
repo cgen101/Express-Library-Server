@@ -3,7 +3,7 @@
 //File name: mongoose.js- mongo config file
 
 const mongoose = require("mongoose"); 
-const mongoCS = "mongodb+srv://chloegentry:libraryDatabase@cluster0.k3xsof1.mongodb.net/LibraryDatabase"
+const mongoCS = "mongodb+srv://chloegentry:libraryDatabase@cluster0.k3xsof1.mongodb.net/CapstoneDatabase"
 
 const BooksData = require('./books')
 

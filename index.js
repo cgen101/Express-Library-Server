@@ -2,7 +2,7 @@
 //Last modified: 11/21/2023
 //File name: index.js- express server code modified to support mongo
 //Mongo Atlas connection string: 
-//    mongodb+srv://chloegentry:libraryDatabase@cluster0.k3xsof1.mongodb.net/LibraryDatabase
+//    mongodb+srv://chloegentry:libraryDatabase@cluster0.k3xsof1.mongodb.net/CapstoneDatabase
 
 var express = require('express');
 const mongoose = require('./mongoose'); 
@@ -53,7 +53,8 @@ function responseBooks(listBooks)
 { 
    const response = (listBooks).map(book => ({
       id: book.IDandTitle.id,
-      title: book.IDandTitle.title
+      title: book.IDandTitle.title,
+      author: book.IDandTitle.author
    }));
 
    return response;
