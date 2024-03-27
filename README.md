@@ -13,11 +13,10 @@ This is a full-stack library inventory system built with Node.js, MongoDB Atlas,
 ## File Structure
 
 - books.js: contains the book schema and virtual function to display book information. 
-- capstone-books.json: contains the json which was used to input books and their information into the database. 
--capstone-style.css: stylesheet for index.html. 
+- capstone-books.json: contains the json which was used to input books and their information into thedatabase. 
+- capstone-style.css: stylesheet for index.html. 
 - Express Assignment.pdf: contains the assignment specifications. 
-- index.html: the main HTML file containing the structure  
-        and layout of the web page.
+- index.html: the main HTML file containing the structure and layout of the web page.
 - mongoose.js: Mongo config file 
 
 ## Dependencies 
