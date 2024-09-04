@@ -19,10 +19,12 @@ const BookSchema = new mongoose.Schema({
 //Virtual function to display book id and title
 BookSchema.virtual("IDandTitle")
     .get(function () {
-        return { id: this.id, title: this.title, author:this.author, publisher: this.publisher};
+        return { id: this.id, title: this.title, author:this.author, 
+            publisher: this.publisher, ISBN: this.isbn, avail: this.avail, who: this.who, due: this.due};
     })
     .set(function (v) {
-        this.set({ id: v.id, title: v.title, author: v.author, publisher: v.publisher });
+        this.set({ id: v.id, title: v.title, author: v.author, publisher: v.publisher, 
+            ISBN:v.isbn, avail: v.avail, who: v.who, due: v.due });
     });
 
 module.exports = model('Books', BookSchema);

@@ -55,7 +55,11 @@ function responseBooks(listBooks)
       id: book.IDandTitle.id,
       title: book.IDandTitle.title,
       author: book.IDandTitle.author,
-      publisher: book.IDandTitle.publisher
+      publisher: book.IDandTitle.publisher,
+      isbn: book.IDandTitle.isbn,
+      avail: book.IDandTitle.avail, 
+      who: book.IDandTitle.who, 
+      due: book.IDandTitle.due
    }));
 
    return response;
