@@ -54,7 +54,8 @@ function responseBooks(listBooks)
    const response = (listBooks).map(book => ({
       id: book.IDandTitle.id,
       title: book.IDandTitle.title,
-      author: book.IDandTitle.author
+      author: book.IDandTitle.author,
+      publisher: book.IDandTitle.publisher
    }));
 
    return response;

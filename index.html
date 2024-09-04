@@ -10,8 +10,7 @@
     <script type="text/babel">
         const { useState, useEffect } = React;
 
-
-        const ShowHomePage = ({onCheckOut, onReturnClick}) => {
+        const ShowHomePage = ({onCheckOut, onReturnClick, onEditClick}) => {
             const [availableBooks, setAvailableBooks] = useState([]);
             useEffect(() => {
                 fetch('http://localhost:3000/books?avail=true')
@@ -24,27 +23,35 @@
 
             return (
                 <div className="actionPage">
-                <div className="actionHead">
-                <h1>Available Books</h1>
-                </div>
-                <div className="bookList">
-                <table>
-                    <tbody>
-                        {availableBooks.map((book) => (
-                        <tr key={book.id}>
-                            <td>{book.title}</td>
-                            <td>{book.author}</td>
-                            <td>
-                            <button onClick={() => onCheckOut(book.id)}>Check Out</button>
-                            </td>
-                        </tr>
-                        ))}
-                    </tbody>
-                </table>
-                </div>
-                <div className="return">
-                <button onClick={onReturnClick}>Return A Book</button>
-                </div>
+
+                    <div className="return">
+                        <button onClick={onReturnClick}>Return A Book</button>
+                    </div>
+                    <div className="editData">
+                        <button onClick={onEditClick}>Edit database</button>
+                    </div>
+
+                    <div className="actionHead">
+                    <h1>Available Books</h1>
+                    </div>
+
+                    <div className="bookList">
+                        <table>
+                            <tbody>
+                                {availableBooks.map((book) => (
+                                <tr key={book.id}>
+                                    <td>{book.title}</td>
+                                    <td>{book.author}</td>
+                                    <td>{book.publisher}</td>
+                                    <td>
+                                    <button onClick={() => onCheckOut(book.id)}>Check Out</button>
+                                    </td>
+                                </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+
                 </div>
             );
         };
@@ -72,6 +79,7 @@
                         <tr key={book.id}>
                             <td>{book.title}</td>
                             <td>{book.author}</td>
+                            <td>{book.publisher}</td>
                             <td>
                             <button onClick={() => onReturn(book.id)}>Return</button>
                             </td>
@@ -87,16 +95,57 @@
             );
         };
 
+        const ShowAllBooks = ({onBackToHome}) => {
+            const [allBooks, setAllBooks] = useState([]);
+            useEffect(() => {
+                fetch('http://localhost:3000/books')
+                .then((response) => response.json())
+                .then((data) => {
+                setAllBooks(data);
+            })
+            .catch((error) => console.error('Error fetching books:', error));
+            }, []);
+
+            return (
+                <div className="actionPage">
+                    <div className="actionHead">
+                        <h1>All Books</h1>
+                    </div>
+                    <div className="bookList">
+                        <table>
+                            <tbody>
+                                {allBooks.map((book) => (
+                                <tr key={book.id}>
+                                    <td>{book.title}</td>
+                                    <td>{book.author}</td>
+                                    <td>{book.publisher}</td>
+                                    <td>
+                                    <button>Remove</button>
+                                    </td>
+                                </tr>
+                                ))}
+                            </tbody>
+                        </table>
+                    </div>
+                    <div className="goBack">
+                        <button onClick={onBackToHome}>Go Back</button>
+                    </div>
+                </div>
+            );
+        };
+
         const App = () => {
             const [currentView, setCurrentView] = useState('home');
 
             const handleReturnClick = () => {
                 setCurrentView('unavailableBooks');
             };
-
             const handleBackToHome = () => {
                 setCurrentView('home');
             };
+            const handleEditClick = () => {
+                setCurrentView('edit');
+            }
 
             const handleCheckOut = async (bookId) => {
                 let userName;
@@ -183,7 +232,8 @@
                     <div className="HomePage">
                         <ShowHomePage
                         onCheckOut={handleCheckOut} 
-                        onReturnClick={handleReturnClick} />
+                        onReturnClick={handleReturnClick}
+                        onEditClick={handleEditClick} />
                     </div>
                     )}
 
@@ -191,6 +241,13 @@
                     <div className="UnavailableBooks">
                         <ShowUnavailableBooks 
                             onReturn={handleReturn}
+                            onBackToHome={handleBackToHome} />
+                    </div>
+                    )}
+
+                    {currentView === 'edit' && (
+                    <div className="editBooks">
+                        <ShowAllBooks 
                             onBackToHome={handleBackToHome} />
                     </div>
                     )}
