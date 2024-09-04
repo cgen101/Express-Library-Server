@@ -96,7 +96,7 @@
             );
         };
 
-        const ShowAllBooks = ({onBackToHome}) => {
+        const ShowAllBooks = ({onBackToHome, onDelete}) => {
             const [allBooks, setAllBooks] = useState([]);
             useEffect(() => {
                 fetch('http://localhost:3000/books')
@@ -109,6 +109,7 @@
 
             return (
                 <div className="actionPage">
+                    <button>Add a book</button>
                     <div className="actionHead">
                         <h1>All Books</h1>
                     </div>
@@ -119,9 +120,11 @@
                                 <tr key={book.id}>
                                     <td>{book.title}</td>
                                     <td>{book.author}</td>
+                                    <td>{book.isbn}</td>
                                     <td>{book.publisher}</td>
+                                    <td>{bookAvailability(book)}</td>
                                     <td>
-                                    <button>Remove</button>
+                                    <button onClick={() => onDelete(book.id)}>Remove</button>
                                     </td>
                                 </tr>
                                 ))}
@@ -133,6 +136,15 @@
                     </div>
                 </div>
             );
+        };
+
+        const bookAvailability = (book) => {
+            if (book.avail === false) {
+                return "Unavailable";
+            }
+            else { 
+                return "Available"; 
+            }
         };
 
         const App = () => {
@@ -147,6 +159,29 @@
             const handleEditClick = () => {
                 setCurrentView('edit');
             }
+
+            const handleDelete = async (bookId) => {
+                try {
+                    const bookInfoResponse = await fetch(`http://localhost:3000/books/${bookId}`, { 
+                        method: 'GET', 
+                    });
+                    const bookInfo = await bookInfoResponse.json();
+                    const bookTitle = bookInfo.title;
+
+                    try { 
+                        const response = await fetch(`http://localhost:3000/books/${bookId}`, { 
+                        method: 'DELETE', 
+                        });
+                        window.alert(`"${bookTitle}" deleted. Please refresh page.`);
+
+                    } catch(error) { 
+                        window.alert(`Error deleting book`);
+                    }
+                    
+                } catch (error) {
+                    window.alert(`Error deleting book`);
+                }
+            };
 
             const handleCheckOut = async (bookId) => {
                 let userName;
@@ -249,7 +284,8 @@
                     {currentView === 'edit' && (
                     <div className="editBooks">
                         <ShowAllBooks 
-                            onBackToHome={handleBackToHome} />
+                            onBackToHome={handleBackToHome} 
+                            onDelete={handleDelete} />
                     </div>
                     )}
                 </div>
