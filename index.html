@@ -96,7 +96,7 @@
             );
         };
 
-        const ShowAllBooks = ({onBackToHome, onDelete}) => {
+        const ShowAllBooks = ({onAddClick, onDelete, onBackToHome}) => {
             const [allBooks, setAllBooks] = useState([]);
             useEffect(() => {
                 fetch('http://localhost:3000/books')
@@ -109,7 +109,20 @@
 
             return (
                 <div className="actionPage">
-                    <button>Add a book</button>
+                    <button onClick={onAddClick}>Add a book</button>
+                    <div id="addForm" style={{display: "none"}}>
+                        <form id="newBookForm">
+                            <label>Title:</label>
+                            <input type="text" name="title" ></input>
+                            <label>Author:</label>
+                            <input type="text" name="author"></input>
+                            <label>ISBN:</label>
+                            <input type="text" name="isbn"></input>
+                            <label>Publisher:</label>
+                            <input type="text" name="publisher"></input>
+                            <input type="submit" value="submit"></input>
+                        </form>
+                    </div>
                     <div className="actionHead">
                         <h1>All Books</h1>
                     </div>
@@ -159,6 +172,22 @@
             const handleEditClick = () => {
                 setCurrentView('edit');
             }
+            const handleAddClick = () => {
+                document.getElementById("addForm").style.display = "block"; 
+
+                const form = document.getElementById("newBookForm");
+                form.addEventListener('submit', function(event) {
+                    event.preventDefault();
+                    const formData = {};
+                    const formElements = new FormData(event.target);
+                    formElements.forEach((value, key) => {
+                        formData[key] = value;
+                    });
+
+                    handleAdd(formData);
+                });
+            }
+
 
             const handleDelete = async (bookId) => {
                 try {
@@ -170,7 +199,7 @@
 
                     try { 
                         const response = await fetch(`http://localhost:3000/books/${bookId}`, { 
-                        method: 'DELETE', 
+                            method: 'DELETE', 
                         });
                         window.alert(`"${bookTitle}" deleted. Please refresh page.`);
 
@@ -181,6 +210,26 @@
                 } catch (error) {
                     window.alert(`Error deleting book`);
                 }
+            };
+
+            const handleAdd = async (newBook) => {
+                const response = await fetch(`http://localhost:3000/books`, { 
+                        method: 'POST', 
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            title: newBook.title,
+                            author: newBook.author,
+                            isbn: newBook.isbn,
+                            publisher: newBook.publisher ,
+                            avail: true,
+                            who: null,
+                            due: null,
+                        }),
+                });
+                if (response.ok) {console.log("you did it");}
+                else{console.log("failed");}
             };
 
             const handleCheckOut = async (bookId) => {
@@ -285,7 +334,10 @@
                     <div className="editBooks">
                         <ShowAllBooks 
                             onBackToHome={handleBackToHome} 
-                            onDelete={handleDelete} />
+                            onDelete={handleDelete} 
+                            onAddClick={handleAddClick}
+                        />
+                    
                     </div>
                     )}
                 </div>
