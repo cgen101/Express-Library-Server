@@ -38,6 +38,11 @@
                     <div className="bookList">
                         <table>
                             <tbody>
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Author</th>
+                                    <th>Publisher</th>
+                                </tr>
                                 {availableBooks.map((book) => (
                                 <tr key={book.id}>
                                     <td>{book.title}</td>
@@ -75,12 +80,18 @@
                 <div className="bookList">
                 <table>
                     <tbody>
+                        <tr>
+                            <th>Title</th>
+                            <th>Author</th>
+                            <th>Publisher</th>
+                            <th>Due back</th>
+                         </tr>
                         {unavailableBooks.map((book) => (
                         <tr key={book.id}>
                             <td>{book.title}</td>
                             <td>{book.author}</td>
                             <td>{book.publisher}</td>
-                            <td>Due back: {book.due}</td>
+                            <td>{book.due}</td>
                             <td>
                             <button onClick={() => onReturn(book.id)}>Return</button>
                             </td>
@@ -129,6 +140,13 @@
                     <div className="bookList">
                         <table>
                             <tbody>
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Author</th>
+                                    <th>ISBN</th>
+                                    <th>Publisher</th>
+                                    <th>Status</th>
+                                </tr>
                                 {allBooks.map((book) => (
                                 <tr key={book.id}>
                                     <td>{book.title}</td>
