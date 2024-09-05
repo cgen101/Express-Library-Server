@@ -4,6 +4,9 @@
     <meta charset="UTF-8" />
     <title>Capstone- full-stack library database</title>
     <link rel="stylesheet" href="capstone-style.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Roboto+Flex:opsz,wght@8..144,100..1000&display=swap');
+        </style>
     <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -23,40 +26,45 @@
 
             return (
                 <div className="actionPage">
-
-                    <div className="return">
-                        <button onClick={onReturnClick}>Return A Book</button>
+                    <div className="header">
+                        <div className="logo">
+                            <div>
+                            <img src="lib.png" height="40px" width="40px"></img>
+                            </div>
+                            <div>
+                            <h1>ibro</h1>
+                            </div>
+                        </div>
+                        <div className="buttons">
+                                <button onClick={onReturnClick}>Return A Book</button>
+                                <button onClick={onEditClick}>Edit database</button>
+                        </div>
                     </div>
-                    <div className="editData">
-                        <button onClick={onEditClick}>Edit database</button>
+                    <div className="title">
+                        <h1>Available Books</h1>
                     </div>
-
-                    <div className="actionHead">
-                    <h1>Available Books</h1>
-                    </div>
-
                     <div className="bookList">
                         <table>
                             <tbody>
-                                <tr>
-                                    <th>Title</th>
-                                    <th>Author</th>
-                                    <th>Publisher</th>
-                                </tr>
-                                {availableBooks.map((book) => (
-                                <tr key={book.id}>
-                                    <td>{book.title}</td>
-                                    <td>{book.author}</td>
-                                    <td>{book.publisher}</td>
-                                    <td>
-                                    <button onClick={() => onCheckOut(book.id)}>Check Out</button>
-                                    </td>
-                                </tr>
-                                ))}
-                            </tbody>
+                            <tr className="theading">
+                                <th>Title</th>
+                                <th>Author</th>
+                                <th>Publisher</th>
+                                <th></th>
+                            </tr>
+                            {availableBooks.map((book) => (
+                            <tr key={book.id}>
+                                <td>{book.title}</td>
+                                <td>{book.author}</td>
+                                <td>{book.publisher}</td>
+                                <td>
+                                <button onClick={() => onCheckOut(book.id)}>Check Out</button>
+                                </td>
+                            </tr>
+                            ))}
+                        </tbody>
                         </table>
                     </div>
-
                 </div>
             );
         };
@@ -74,35 +82,39 @@
 
             return (
                 <div className="actionPage">
-                <div className="actionHead">
-                <h1>Return a Book</h1>
-                </div>
-                <div className="bookList">
-                <table>
-                    <tbody>
-                        <tr>
-                            <th>Title</th>
-                            <th>Author</th>
-                            <th>Publisher</th>
-                            <th>Due back</th>
-                         </tr>
-                        {unavailableBooks.map((book) => (
-                        <tr key={book.id}>
-                            <td>{book.title}</td>
-                            <td>{book.author}</td>
-                            <td>{book.publisher}</td>
-                            <td>{book.due}</td>
-                            <td>
-                            <button onClick={() => onReturn(book.id)}>Return</button>
-                            </td>
-                        </tr>
-                        ))}
-                    </tbody>
-                </table>
-                </div>
-                <div className="goBack">
-                <button onClick={onBackToHome}>Go Back</button>
-                </div>
+                    <div className="header">
+                        <h1>library</h1>
+                        <div className="buttons"> 
+                                <button onClick={onBackToHome}>Go Back</button>
+                        </div>
+                    </div>
+                    <div className="title">
+                        <h1>Return a Book</h1>
+                    </div>
+                    <div className="bookList">
+                        <table>
+                        <tbody>
+                            <tr className="theading">
+                                <th>Title</th>
+                                <th>Author</th>
+                                <th>Publisher</th>
+                                <th>Due date</th>
+                                <th></th>
+                            </tr>
+                            {unavailableBooks.map((book) => (
+                            <tr key={book.id}>
+                                <td>{book.title}</td>
+                                <td>{book.author}</td>
+                                <td>{book.publisher}</td>
+                                <td>{book.due}</td>
+                                <td>
+                                    <button onClick={() => onReturn(book.id)}>Return</button>
+                                </td>
+                            </tr>
+                            ))}
+                        </tbody>
+                        </table>
+                    </div>
                 </div>
             );
         };
@@ -120,7 +132,42 @@
 
             return (
                 <div className="actionPage">
-                    <button onClick={onAddClick}>Add a book</button>
+                    <div className="header">
+                        <h1>library</h1>
+                        <div className="buttons">
+                                <button onClick={onAddClick}>Add a book</button>
+                                <button onClick={onBackToHome}>Go Back</button>
+                        </div>
+                    </div>
+                    <div className="title">
+                        <h1>All Books</h1>
+                    </div>
+                    <div className="bookList">
+                        <table>
+                        <tbody>
+                            <tr className="theading">
+                                <th>Title</th>
+                                <th>Author</th>
+                                <th>ISBN</th>
+                                <th>Publisher</th>
+                                <th>Status</th>
+                                <th></th>
+                            </tr>
+                            {allBooks.map((book) => (
+                            <tr key={book.id}>
+                                <td>{book.title}</td>
+                                <td>{book.author}</td>
+                                <td>{book.isbn}</td>
+                                <td>{book.publisher}</td>
+                                <td>{bookAvailability(book)}</td>
+                                <td>
+                                <button onClick={() => onDelete(book.id)}>Remove</button>
+                                </td>
+                            </tr>
+                            ))}
+                        </tbody>
+                        </table>
+                    </div>
                     <div id="addForm" style={{display: "none"}}>
                         <form id="newBookForm">
                             <label>Title:</label>
@@ -133,37 +180,6 @@
                             <input type="text" name="publisher"></input>
                             <input type="submit" value="submit"></input>
                         </form>
-                    </div>
-                    <div className="actionHead">
-                        <h1>All Books</h1>
-                    </div>
-                    <div className="bookList">
-                        <table>
-                            <tbody>
-                                <tr>
-                                    <th>Title</th>
-                                    <th>Author</th>
-                                    <th>ISBN</th>
-                                    <th>Publisher</th>
-                                    <th>Status</th>
-                                </tr>
-                                {allBooks.map((book) => (
-                                <tr key={book.id}>
-                                    <td>{book.title}</td>
-                                    <td>{book.author}</td>
-                                    <td>{book.isbn}</td>
-                                    <td>{book.publisher}</td>
-                                    <td>{bookAvailability(book)}</td>
-                                    <td>
-                                    <button onClick={() => onDelete(book.id)}>Remove</button>
-                                    </td>
-                                </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
-                    <div className="goBack">
-                        <button onClick={onBackToHome}>Go Back</button>
                     </div>
                 </div>
             );
@@ -330,33 +346,26 @@
             };
 
             return (
-                <div className="body">
+                <div>
                     {currentView === 'home' && (
-                    <div className="HomePage">
                         <ShowHomePage
                         onCheckOut={handleCheckOut} 
                         onReturnClick={handleReturnClick}
                         onEditClick={handleEditClick} />
-                    </div>
                     )}
 
                     {currentView === 'unavailableBooks' && (
-                    <div className="UnavailableBooks">
                         <ShowUnavailableBooks 
                             onReturn={handleReturn}
                             onBackToHome={handleBackToHome} />
-                    </div>
                     )}
 
                     {currentView === 'edit' && (
-                    <div className="editBooks">
                         <ShowAllBooks 
                             onBackToHome={handleBackToHome} 
                             onDelete={handleDelete} 
                             onAddClick={handleAddClick}
                         />
-                    
-                    </div>
                     )}
                 </div>
             );
