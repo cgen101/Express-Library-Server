@@ -35,6 +35,9 @@
                             <h1>ibro</h1>
                             </div>
                         </div>
+                        <div> 
+                        <input type="text" placeholder="Search.."></input>
+                        </div>
                         <div className="buttons">
                                 <button onClick={onReturnClick}>Return A Book</button>
                                 <button onClick={onEditClick}>Edit database</button>
@@ -170,14 +173,14 @@
                     </div>
                     <div id="addForm" style={{display: "none"}}>
                         <form id="newBookForm">
-                            <label>Title:</label>
-                            <input type="text" name="title" ></input>
-                            <label>Author:</label>
-                            <input type="text" name="author"></input>
-                            <label>ISBN:</label>
-                            <input type="text" name="isbn"></input>
-                            <label>Publisher:</label>
-                            <input type="text" name="publisher"></input>
+                            <label for="title">Title:</label>
+                            <input type="text" name="title" required></input>
+                            <label for="author">Author:</label>
+                            <input type="text" name="author" required></input>
+                            <label for="isbn">ISBN:</label>
+                            <input type="text" name="isbn" required></input>
+                            <label for="publisher">Publisher:</label>
+                            <input type="text" name="publisher" required></input>
                             <input type="submit" value="submit"></input>
                         </form>
                     </div>
